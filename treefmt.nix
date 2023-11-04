@@ -9,8 +9,4 @@
     taplo.enable = true; # toml
     yamlfmt.enable = true; # yaml
   };
-  settings = {
-    formatter.shellcheck.includes = ["*.sh" "./completions/bash/eza"];
-    formatter.rustfmt.excludes = ["src/options/flags.rs"];
-  };
 }

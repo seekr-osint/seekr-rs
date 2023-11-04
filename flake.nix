@@ -7,11 +7,13 @@
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
-    nci = { 
+    nci = {
       url = "github:yusdacra/nix-cargo-integration";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.parts.follows = "flake-parts";
-      inputs.treefmt.follows = "treefmt-nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        parts.follows = "flake-parts";
+        treefmt.follows = "treefmt-nix";
+      };
     };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -30,27 +32,91 @@
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      systems =  [ 
-        "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ]; 
+      systems = [
+        "x86_64-linux"
+        "x86_64-darwin"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
       imports = [
         inputs.nci.flakeModule
         inputs.treefmt-nix.flakeModule
-        ./crates.nix
+        inputs.pre-commit-hooks.flakeModule
       ];
       perSystem = {
-        pkgs,
         config,
+        pkgs,
+        self',
+        system,
         ...
       }: let
-        # shorthand for accessing this crate's outputs
-        # you can access crate outputs under `config.nci.outputs.<crate name>` (see documentation)
-        crateOutputs = config.nci.outputs."seekr";
+        fromTreefmtFile = {
+          toFilter ? [],
+          path ? ./treefmt.nix,
+          extraHooks ? {},
+        }: let
+          treefmt' = import path;
+
+          # treefmt
+          pre-commitFormatters = builtins.attrNames inputs.pre-commit-hooks.packages.${system};
+          programs =
+            treefmt'.programs
+            // (
+              builtins.mapAttrs
+              # add the package from pre-commit-hooks to the formatter
+              (n: v: {
+                inherit (v) enable;
+                package = inputs.pre-commit-hooks.packages.${system}.${n};
+              })
+              (pkgs.lib.filterAttrs (n: _v: (builtins.elem n pre-commitFormatters)) treefmt'.programs) # attrSet of the formatters which pre-commit-hooks has a package to use
+            );
+          treefmtCfg = treefmt' // {inherit programs;};
+
+          hooksFromTreefmtFormatters =
+            builtins.mapAttrs
+            (_n: v: {inherit (v) enable;}) (pkgs.lib.filterAttrs (n: _v: (!builtins.elem n toFilter)) treefmt'.programs);
+        in {
+          treefmt =
+            treefmtCfg;
+          pre-commit = {
+            settings = {
+              src = ./.;
+              hooks =
+                hooksFromTreefmtFormatters // extraHooks;
+            };
+          };
+        };
       in {
-        treefmt = import ./treefmt.nix;
-        # export the crate devshell as the default devshell
-        devShells.default = crateOutputs.devShell;
-        # export the release package of the crate as default package
-        packages.default = crateOutputs.packages.release;
+        inherit
+          (fromTreefmtFile {
+            toFilter = ["yamlfmt"];
+            path = ./treefmt.nix;
+          })
+          treefmt
+          pre-commit
+          ;
+
+        nci = {
+          projects = {
+            seekr = {
+              path = ./.;
+              export = true;
+            };
+          };
+          toolchainConfig = ./rust-toolchain.toml;
+        };
+        packages = {
+          default = self'.packages.seekr-release;
+          toolchain = config.nci.toolchains.shell;
+        };
+        devShells.default = pkgs.mkShell {
+          shellHook = ''
+            ${config.pre-commit.installationScript}
+          '';
+          nativeBuildInputs = with pkgs; [
+            config.nci.toolchains.shell
+          ];
+        };
       };
     };
 }
