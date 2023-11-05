@@ -101,8 +101,22 @@
             seekr = {
               path = ./.;
               export = true;
+              drvConfig = {
+                env = {
+                  DATABASE_URL = "sqlite:db/dev.db";
+                };
+              };
             };
           };
+          # crates = {
+          #   seekr = {
+          #     export = true;
+          #     drvConfig = {
+          #       env = {
+          #       };
+          #     };
+          #   };
+          # };
           toolchainConfig = ./rust-toolchain.toml;
         };
         packages = {
@@ -115,6 +129,7 @@
           '';
           nativeBuildInputs = with pkgs; [
             config.nci.toolchains.shell
+            sqlite
           ];
         };
       };
