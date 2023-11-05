@@ -26,3 +26,4 @@ time = "0.3.30"
 axum-extra = { version = "0.8.0", features = ["form", "query"] }
 utoipa = { version = "4.0.0", features = ["axum_extras"] }
 utoipa-redoc = { version = "1.0.0", features = ["axum"] }
+serde = { version = "1.0.190", features = ["derive"] }

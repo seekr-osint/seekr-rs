@@ -1,10 +1,12 @@
 use axum::{
     error_handling::HandleErrorLayer,
     http::StatusCode,
-    response::{Html, IntoResponse, Response},
+    response::{IntoResponse, Response},
     routing::get,
     BoxError, Router,
 };
+use seekr::seekr;
+use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use time::Duration;
 use tower::ServiceBuilder;
@@ -12,38 +14,15 @@ use tower_sessions::{
     // session_store::ExpiredDeletion,
     sqlx::SqlitePool,
     Expiry,
-    Session,
     SessionManagerLayer,
     // Expiry, Session, SessionManagerLayer,
     SqliteStore,
 };
 use utoipa::OpenApi;
+use utoipa::{IntoParams, ToSchema};
 use utoipa_redoc::{Redoc, Servable};
 
-struct AppError(anyhow::Error);
-
-// Tell axum how to convert `AppError` into a response.
-impl IntoResponse for AppError {
-    fn into_response(self) -> Response {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Something went wrong: {}", self.0),
-        )
-            .into_response()
-    }
-}
-
-// This enables using `?` on functions that return `Result<_, anyhow::Error>` to turn them into
-// `Result<_, AppError>`. That way you don't need to do that manually.
-impl<E> From<E> for AppError
-where
-    E: Into<anyhow::Error>,
-{
-    fn from(err: E) -> Self {
-        Self(err.into())
-    }
-}
-
+// #[derive(Serialize, Deserialize, ToSchema)]
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[derive(OpenApi)]
@@ -70,8 +49,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = Router::new()
         .merge(Redoc::with_url("/redoc", ApiDoc::openapi()))
-        .route("/", get(handler::handler))
-        .route("/error", get(handler::test_handler))
+        .route("/", get(seekr::handler))
+        .route("/error", get(seekr::test_handler))
         .layer(session_service);
 
     let addr = SocketAddr::from(addr_arg);
@@ -80,42 +59,4 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .serve(app.into_make_service())
         .await?;
     Ok(())
-}
-
-mod handler {
-    use crate::AppError;
-
-    use axum::{
-        error_handling::HandleErrorLayer,
-        http::StatusCode,
-        response::{Html, IntoResponse, Response},
-        routing::get,
-        BoxError, Router,
-    };
-    use std::net::SocketAddr;
-    use time::Duration;
-    use tower::ServiceBuilder;
-    use tower_sessions::{
-        // session_store::ExpiredDeletion,
-        sqlx::SqlitePool,
-        Expiry,
-        Session,
-        SessionManagerLayer,
-        // Expiry, Session, SessionManagerLayer,
-        SqliteStore,
-    };
-    use utoipa::OpenApi;
-    use utoipa_redoc::{Redoc, Servable};
-
-    pub async fn handler(session: Session) -> Html<&'static str> {
-        Html("<h1>Hello, World!</h1>")
-    }
-    pub async fn test_handler() -> Result<(), AppError> {
-        try_thing()?;
-        Ok(())
-    }
-
-    fn try_thing() -> Result<(), anyhow::Error> {
-        anyhow::bail!("it failed!")
-    }
 }
