@@ -1,12 +1,6 @@
-use axum::{
-    error_handling::HandleErrorLayer,
-    http::StatusCode,
-    response::{IntoResponse, Response},
-    routing::get,
-    BoxError, Router,
-};
+use axum::{error_handling::HandleErrorLayer, http::StatusCode, routing::get, BoxError, Router};
 use seekr::seekr;
-use serde::{Deserialize, Serialize};
+
 use std::net::SocketAddr;
 use time::Duration;
 use tower::ServiceBuilder;
@@ -19,7 +13,7 @@ use tower_sessions::{
     SqliteStore,
 };
 use utoipa::OpenApi;
-use utoipa::{IntoParams, ToSchema};
+
 use utoipa_redoc::{Redoc, Servable};
 
 // #[derive(Serialize, Deserialize, ToSchema)]

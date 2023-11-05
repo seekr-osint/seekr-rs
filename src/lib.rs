@@ -29,27 +29,9 @@ pub mod seekr {
     use axum::response::Html;
 
     use axum::{
-        error_handling::HandleErrorLayer,
         http::StatusCode,
         response::{IntoResponse, Response},
-        routing::get,
-        BoxError, Router,
     };
-    use serde::{Deserialize, Serialize};
-    use std::net::SocketAddr;
-    use time::Duration;
-    use tower::ServiceBuilder;
-    use tower_sessions::{
-        // session_store::ExpiredDeletion,
-        sqlx::SqlitePool,
-        Expiry,
-        SessionManagerLayer,
-        // Expiry, Session, SessionManagerLayer,
-        SqliteStore,
-    };
-    use utoipa::OpenApi;
-    use utoipa::{IntoParams, ToSchema};
-    use utoipa_redoc::{Redoc, Servable};
 
     use tower_sessions::Session;
 
