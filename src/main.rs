@@ -47,7 +47,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // .route("/", get(seekr::handler))
         // .route("/error", get(seekr::test_handler))
         .route("/api/v1/person", routing::get(seekr::get_person))
-        .with_state(pool);
+        .route("/api/v1/person2", routing::get(seekr::post_person))
+        // .route("/api/v1/person", routing::post(seekr::post_person))
+        .with_state(pool)
+       // .layer(axum_sqlx_tx::Layer::new(pool))
+       ;
     // .layer(session_service)
 
     let addr = SocketAddr::from(addr_arg);

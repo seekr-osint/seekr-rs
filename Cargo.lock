@@ -228,6 +228,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum-sqlx-tx"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2c9d8f76ab82af35ec025cba144495a232ca5da918437fce52c5128a1e590911"
+dependencies = [
+ "axum-core",
+ "bytes",
+ "futures-core",
+ "http",
+ "http-body",
+ "parking_lot",
+ "sqlx",
+ "thiserror",
+ "tower-layer",
+ "tower-service",
+]
+
+[[package]]
 name = "backtrace"
 version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1479,6 +1497,7 @@ dependencies = [
  "askama",
  "axum",
  "axum-extra",
+ "axum-sqlx-tx",
  "futures",
  "serde",
  "sqlx",
