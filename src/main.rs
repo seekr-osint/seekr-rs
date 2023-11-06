@@ -1,60 +1,46 @@
-use axum::{error_handling::HandleErrorLayer, http::StatusCode, routing, BoxError, Router};
+use axum::{routing, Router};
 use seekr::seekr;
-
 use sqlx::SqlitePool;
+use std::fs::File;
 use std::net::SocketAddr;
-use time::Duration;
-use tower::ServiceBuilder;
-use tower_sessions::{
-    // session_store::ExpiredDeletion,
-    // sqlx::SqlitePool,
-    Expiry,
-    SessionManagerLayer,
-    // Expiry, Session, SessionManagerLayer,
-    SqliteStore,
-};
 use utoipa::OpenApi;
-
 use utoipa_redoc::{Redoc, Servable};
 
-// #[derive(Serialize, Deserialize, ToSchema)]
+pub struct Args<'a> {
+    addr: ([u8; 4], u16),
+    db_path: &'a str,
+}
+impl Args<'_> {
+    pub fn create_db(&self) -> Result<&Self, anyhow::Error> {
+        let _ = File::create(self.db_path)?;
+        Ok(self)
+    }
+    pub fn get_pool(&self) -> String {
+        format!("sqlite:{}", self.db_path)
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[derive(OpenApi)]
     #[openapi()]
     struct ApiDoc;
     // TODO command line arguments
-    let addr_arg = ([127, 0, 0, 1], 3000);
+    let args = Args {
+        addr: ([127, 0, 0, 1], 3000),
+        db_path: "seekr.db",
+    };
 
-    let pool_arg = "sqlite:seekr.db";
-
-    let pool = SqlitePool::connect(pool_arg).await?;
-    // let session_store = SqliteStore::new(pool);
+    let pool = SqlitePool::connect(&args.create_db()?.get_pool()).await?;
     sqlx::migrate!().run(&pool).await?;
-
-    // let session_service = ServiceBuilder::new()
-    //     .layer(HandleErrorLayer::new(|_: BoxError| async {
-    //         StatusCode::BAD_REQUEST
-    //     }))
-    //     .layer(
-    //         SessionManagerLayer::new(session_store)
-    //             .with_secure(false)
-    //             .with_expiry(Expiry::OnInactivity(Duration::seconds(10))),
-    //     );
 
     let app = Router::new()
         .merge(Redoc::with_url("/redoc", ApiDoc::openapi()))
-        // .route("/", get(seekr::handler))
-        // .route("/error", get(seekr::test_handler))
         .route("/api/v1/person", routing::get(seekr::get_person))
         .route("/api/v1/person2", routing::get(seekr::post_person))
-        // .route("/api/v1/person", routing::post(seekr::post_person))
-        .with_state(pool)
-       // .layer(axum_sqlx_tx::Layer::new(pool))
-       ;
-    // .layer(session_service)
+        .with_state(pool);
 
-    let addr = SocketAddr::from(addr_arg);
+    let addr = SocketAddr::from(args.addr);
     println!("listening on {}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
