@@ -1,6 +1,5 @@
-CREATE TABLE IF NOT EXISTS todos
+CREATE TABLE IF NOT EXISTS PEOPLE
 (
-    id          INTEGER PRIMARY KEY NOT NULL,
-    description TEXT                NOT NULL,
-    done        BOOLEAN             NOT NULL DEFAULT 0
+    ID          INTEGER PRIMARY KEY NOT NULL,
+    NAME        TEXT                NOT NULL
 );
