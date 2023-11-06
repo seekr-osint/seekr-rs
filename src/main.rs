@@ -30,7 +30,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let pool = SqlitePool::connect(pool_arg).await?;
     // let session_store = SqliteStore::new(pool);
-    // session_store.migrate().await?;
+    sqlx::migrate!().run(&pool).await?;
 
     // let session_service = ServiceBuilder::new()
     //     .layer(HandleErrorLayer::new(|_: BoxError| async {

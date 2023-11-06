@@ -3,3 +3,4 @@
 .pre-commit-config.yaml
 seekr.db
 seekr.sqlx
+.direnv

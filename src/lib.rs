@@ -107,7 +107,7 @@ pub mod seekr {
     ) -> Result<impl IntoResponse, AppError> {
         let id = sqlx::query!(
             r#"
-        INSERT INTO PEOPLE (NAME) VALUES (?1)"#,
+        insert into people (name) values (?1)"#,
             query.name
         )
         .execute(&pool)
@@ -128,11 +128,11 @@ pub mod seekr {
         State(pool): State<SqlitePool>,
     ) -> Result<(StatusCode, String), AppError> {
         // TODO Option
-        let person = sqlx::query!("select * from PEOPLE where ID = ?1", query.id)
+        let person = sqlx::query!("select * from people where id = ?1", query.id)
             .fetch_one(&pool)
             .await?;
 
-        let res = format!("<h1>{}: {}</h1>", person.ID, person.NAME);
+        let res = format!("<h1>{}: {}</h1>", person.id, person.name);
         Ok((StatusCode::OK, res))
     }
 }

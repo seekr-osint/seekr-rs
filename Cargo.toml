@@ -27,4 +27,3 @@ axum-extra = { version = "0.8.0", features = ["form", "query"] }
 utoipa = { version = "4.0.0", features = ["axum_extras"] }
 utoipa-redoc = { version = "1.0.0", features = ["axum"] }
 serde = { version = "1.0.190", features = ["derive"] }
-axum-sqlx-tx = { version = "0.6.0", features = ["sqlite"] }

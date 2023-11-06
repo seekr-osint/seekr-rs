@@ -130,6 +130,7 @@
           nativeBuildInputs = with pkgs; [
             config.nci.toolchains.shell
             sqlite
+            sqlx-cli
           ];
         };
       };
