@@ -129,6 +129,9 @@
           '';
           nativeBuildInputs = with pkgs; [
             config.nci.toolchains.shell
+            cargo-leptos
+            cargo-generate
+            cargo-udeps
             sqlite
             sqlx-cli
           ];

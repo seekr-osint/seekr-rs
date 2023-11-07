@@ -60,14 +60,15 @@
     unused_import_braces
 )]
 pub mod seekr {
-    use axum::extract::{Query, State};
     use axum::{
+        extract::{Query, State},
         http::StatusCode,
         response::{IntoResponse, Response},
     };
     use serde::Deserialize;
     use sqlx::sqlite::SqlitePool;
     use utoipa::IntoParams;
+
     pub struct AppError(anyhow::Error);
 
     impl IntoResponse for AppError {
@@ -126,3 +127,4 @@ pub mod seekr {
         Ok((StatusCode::OK, res))
     }
 }
+pub mod embed;
