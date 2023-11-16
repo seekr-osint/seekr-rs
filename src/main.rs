@@ -1,4 +1,4 @@
-use ::seekr::embed::embed;
+use ::seekr::embed;
 use axum::{routing, Router};
 use seekr::seekr;
 use sqlx::SqlitePool;
