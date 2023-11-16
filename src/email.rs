@@ -1,5 +1,5 @@
 pub mod email {
-    use serde_email::{Email, EmailError};
+    use serde_email::Email;
 
     pub enum EmailAdress {
         Valid(Email),
