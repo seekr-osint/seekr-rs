@@ -37,3 +37,4 @@ mime_guess = "2.0.4"
 tracing = { version = "0.1.40", features = ["log", "async-await"] }
 tower-http = { version = "0.4.4", features = ["tracing", "metrics", "trace"] }
 serde-email = "3.0.0"
+lingua = "1.6.0"
