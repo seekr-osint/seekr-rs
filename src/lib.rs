@@ -127,4 +127,5 @@ pub mod seekr {
         Ok((StatusCode::OK, res))
     }
 }
+pub mod email;
 pub mod embed;

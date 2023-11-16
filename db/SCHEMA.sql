@@ -1,5 +1,0 @@
-CREATE TABLE IF NOT EXISTS PEOPLE
-(
-    ID          INTEGER PRIMARY KEY NOT NULL,
-    NAME        TEXT                NOT NULL
-);
