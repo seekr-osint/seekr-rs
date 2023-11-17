@@ -132,6 +132,7 @@
             cargo-leptos
             cargo-generate
             cargo-udeps
+            cargo-nextest
             sqlite
             sqlx-cli
           ];

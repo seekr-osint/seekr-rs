@@ -2,7 +2,10 @@
 create table if not exists people
 (
     id          integer primary key not null,
-    name        text not null
+    firstname        text not null,
+    middlename       text
+    lastname         text
+    title            text
 );
 
 create table if not exists emails (

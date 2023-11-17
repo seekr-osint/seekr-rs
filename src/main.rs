@@ -1,4 +1,4 @@
-use ::seekr::embed;
+use ::seekr::{embed, named_tensor};
 use axum::{routing, Router};
 use seekr::seekr;
 use sqlx::SqlitePool;
@@ -33,6 +33,7 @@ impl Args<'_> {
 #[instrument]
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    named_tensor::run::<burn::backend::ndarray::NdArrayBackend<f32>>();
     // tracing_subscriber::fmt::init();
     tracing_subscriber::registry()
         .with(

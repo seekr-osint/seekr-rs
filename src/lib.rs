@@ -101,7 +101,7 @@ pub mod seekr {
         query: Query<CreatePersonQuery>,
         State(pool): State<SqlitePool>,
     ) -> Result<impl IntoResponse, AppError> {
-        let id = sqlx::query!(r#"insert into people (name) values (?1)"#, query.name)
+        let id = sqlx::query!(r#"insert into people (firstname) values (?1)"#, query.name)
             .execute(&pool)
             .await?
             .last_insert_rowid();
@@ -123,9 +123,12 @@ pub mod seekr {
             .fetch_one(&pool)
             .await?;
 
-        let res = format!("<h1>{}: {}</h1>", person.id, person.name);
+        let res = format!("<h1>{}: {}</h1>", person.id, person.firstname);
         Ok((StatusCode::OK, res))
     }
 }
 pub mod email;
 pub mod embed;
+pub mod name;
+pub mod named_tensor;
+pub mod person;
