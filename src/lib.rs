@@ -127,8 +127,8 @@ pub mod seekr {
         Ok((StatusCode::OK, res))
     }
 }
+pub mod birthday;
 pub mod email;
 pub mod embed;
 pub mod name;
-pub mod named_tensor;
 pub mod person;
