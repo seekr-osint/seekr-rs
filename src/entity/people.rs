@@ -8,8 +8,13 @@ pub struct Model {
     #[sea_orm(primary_key)]
     #[schema(example = 5u32)]
     pub id: u32, // u64 is unsupported by sqlx
+
     #[schema(example = "greg")]
-    pub name: String,
+    pub firstname: String,
+    #[schema(example = "john")]
+    pub secondname: Option<String>,
+    #[schema(example = "doe")]
+    pub lastname: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -66,7 +66,7 @@ pub async fn db_test(
 ) -> Result<String, (StatusCode, &'static str)> {
     let person = people::ActiveModel {
         // id: Set(0),
-        name: Set("greg".to_string()),
+        firstname: Set("greg".to_string()),
         ..Default::default()
     };
     match person.insert(&db).await {
