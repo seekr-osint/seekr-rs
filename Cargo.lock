@@ -1104,13 +1104,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "entity"
-version = "0.1.0"
-dependencies = [
- "sea-orm",
-]
-
-[[package]]
 name = "equivalent"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3773,7 +3766,6 @@ dependencies = [
  "anyhow",
  "async-graphql",
  "axum 0.7.2",
- "entity",
  "lingua",
  "migration",
  "mime_guess",

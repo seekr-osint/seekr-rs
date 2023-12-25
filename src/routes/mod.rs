@@ -1,7 +1,10 @@
 mod embed;
+mod get_person;
 mod language_detection;
+mod list_people;
 mod not_found;
 
+use crate::entity::people;
 use axum::{
     extract::State,
     http::StatusCode,
@@ -9,7 +12,6 @@ use axum::{
     Router,
 };
 use embed::static_handler;
-use entity::people;
 use tracing::info;
 use utoipa::OpenApi;
 use utoipa_rapidoc::RapiDoc;
@@ -17,16 +19,22 @@ use utoipa_redoc::{Redoc, Servable};
 use utoipa_swagger_ui::SwaggerUi;
 
 use migration::{Migrator, MigratorTrait};
+use people::Model;
 use sea_orm::{ActiveModelTrait, Database, DatabaseConnection, Set};
 
 pub async fn get_router() -> anyhow::Result<Router<()>> {
     #[derive(OpenApi)]
     #[openapi(
-        paths(language_detection::detect_language_handler,),
+        paths(
+            language_detection::detect_language_handler,
+            list_people::list_people_handler,
+            get_person::get_person_handler,
+        ),
         components(schemas(
             language_detection::DetectLanguageQuery,
             language_detection::LanguageDetectionResult,
-            language_detection::Language
+            language_detection::Language,
+            Model,
         ))
     )]
     struct ApiDoc;
@@ -34,9 +42,7 @@ pub async fn get_router() -> anyhow::Result<Router<()>> {
     let database_url = std::env::var("DATABASE_URL")?;
 
     let db = Database::connect(&database_url).await?;
-    // .expect("Failed to setup the database");
     Migrator::up(&db, None).await?;
-    // .expect("Failed to run migrations for tests");
 
     Ok(Router::new()
         .route("/", get(static_handler))
@@ -46,6 +52,8 @@ pub async fn get_router() -> anyhow::Result<Router<()>> {
             post(language_detection::detect_language_handler),
         )
         .route("/api/v1/db", get(db_test))
+        .route("/api/v1/list_people", get(list_people::list_people_handler))
+        .route("/api/v1/get_person", get(get_person::get_person_handler))
         .merge(RapiDoc::with_openapi("/api-docs/openapi2.json", ApiDoc::openapi()).path("/rapidoc"))
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .merge(Redoc::with_url("/redoc", ApiDoc::openapi()))
@@ -57,7 +65,7 @@ pub async fn db_test(
     State(db): State<DatabaseConnection>,
 ) -> Result<String, (StatusCode, &'static str)> {
     let person = people::ActiveModel {
-        id: Set(0),
+        // id: Set(0),
         name: Set("greg".to_string()),
         ..Default::default()
     };

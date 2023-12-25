@@ -1,3 +1,4 @@
+mod entity;
 mod routes;
 
 use anyhow::Result;

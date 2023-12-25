@@ -10,7 +10,7 @@ authors = ["9glenda"]
 categories = ["database"]
 keywords = ["osint", "security"]
 [workspace]
-members = [".", "migration", "entity"]
+members = [".", "migration"]
 
 [dependencies]
 sqlx = { features = ["sqlite", "runtime-tokio", "tls-rustls", "json"] }
@@ -37,7 +37,7 @@ utoipa = { version = "4.1.0", features = ["axum_extras"] }
 utoipa-rapidoc = { version = "2.0.0", features = ["axum"] }
 utoipa-redoc = { version = "2.0.0", features = ["axum"] }
 utoipa-swagger-ui = { version = "5.0.0", features = ["axum"] }
-entity = { path = "entity" }
+# entity = { path = "entity" }
 migration = { path = "migration" }
 sea-orm = { version = "0.12.10", features = [
   "sqlx-sqlite",
