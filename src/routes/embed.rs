@@ -1,22 +1,15 @@
 use axum::{
     http::{header, StatusCode, Uri},
-    response::{Html, IntoResponse, Response},
+    response::{IntoResponse, Response},
 };
 use rust_embed::RustEmbed;
 
-use tracing::instrument;
-
-#[instrument]
 pub async fn static_handler(uri: Uri) -> impl IntoResponse {
     let path = uri.path().trim_start_matches('/').to_string();
     match path.as_str() {
         "" => StaticFile("index.html".to_string()),
         _ => StaticFile(path),
     }
-}
-
-pub async fn not_found() -> Html<&'static str> {
-    Html("<h1>404</h1><p>Not Found</p>")
 }
 
 #[derive(RustEmbed, Debug)]

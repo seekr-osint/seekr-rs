@@ -135,6 +135,7 @@
             cargo-nextest
             sqlite
             sqlx-cli
+            sea-orm-cli
           ];
         };
       };
