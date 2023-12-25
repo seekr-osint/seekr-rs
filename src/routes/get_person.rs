@@ -40,14 +40,17 @@ impl IntoResponse for PersonByIDQueryError {
     )
 )]
 #[instrument]
+/// Get Person
+///
+/// Get a single person from the database by id.
 pub async fn get_person_handler(
     query: Query<PersonByIDQuery>,
     State(db): State<DatabaseConnection>,
 ) -> Result<Json<people::Model>, PersonByIDQueryError> {
     info!("get id: {}", query.id);
-    if let Ok(people) = people::Entity::find_by_id(query.id).one(&db).await {
-        match people {
-            Some(people) => Ok(Json(people)),
+    if let Ok(person) = people::Entity::find_by_id(query.id).one(&db).await {
+        match person {
+            Some(person) => Ok(Json(person)),
             None => Err(PersonByIDQueryError::NotFound),
         }
     } else {

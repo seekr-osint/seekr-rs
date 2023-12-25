@@ -1,16 +1,18 @@
+pub mod cli;
 mod entity;
 mod routes;
 
 use anyhow::Result;
+use cli::Args;
 use tower_http::trace::TraceLayer;
 use tracing::{info, instrument};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[instrument]
-pub async fn run() -> Result<()> {
+pub async fn run(args: Args) -> Result<()> {
     setup_tracing();
 
-    let app = routes::get_router()
+    let app = routes::get_router(args)
         .await?
         .layer(TraceLayer::new_for_http());
 

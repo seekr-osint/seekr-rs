@@ -1,7 +1,8 @@
 use anyhow::Result;
-use seekr_rs::run;
+use seekr_rs::{cli, run};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    Ok(run().await?)
+    let args = cli::parse();
+    Ok(run(args).await?)
 }

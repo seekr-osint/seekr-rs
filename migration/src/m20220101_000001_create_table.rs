@@ -17,7 +17,9 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(People::Name).string().not_null())
+                    .col(ColumnDef::new(People::Firstname).string().not_null())
+                    .col(ColumnDef::new(People::Lastname).string())
+                    .col(ColumnDef::new(People::Secondname).string())
                     .to_owned(),
             )
             .await
@@ -34,5 +36,7 @@ impl MigrationTrait for Migration {
 enum People {
     Table,
     Id,
-    Name,
+    Firstname,
+    Secondname,
+    Lastname,
 }

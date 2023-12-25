@@ -3,8 +3,9 @@ mod get_person;
 mod language_detection;
 mod list_people;
 mod not_found;
+mod post_person;
 
-use crate::entity::people;
+use crate::{cli::Args, entity::people};
 use axum::{
     extract::State,
     http::StatusCode,
@@ -22,7 +23,7 @@ use migration::{Migrator, MigratorTrait};
 use people::Model;
 use sea_orm::{ActiveModelTrait, Database, DatabaseConnection, Set};
 
-pub async fn get_router() -> anyhow::Result<Router<()>> {
+pub async fn get_router(args: Args) -> anyhow::Result<Router<()>> {
     #[derive(OpenApi)]
     #[openapi(
         paths(
@@ -39,9 +40,7 @@ pub async fn get_router() -> anyhow::Result<Router<()>> {
     )]
     struct ApiDoc;
 
-    let database_url = std::env::var("DATABASE_URL")?;
-
-    let db = Database::connect(&database_url).await?;
+    let db = Database::connect(args.create_db()?.get_pool()).await?;
     Migrator::up(&db, None).await?;
 
     Ok(Router::new()
@@ -54,6 +53,10 @@ pub async fn get_router() -> anyhow::Result<Router<()>> {
         .route("/api/v1/db", get(db_test))
         .route("/api/v1/list_people", get(list_people::list_people_handler))
         .route("/api/v1/get_person", get(get_person::get_person_handler))
+        .route(
+            "/api/v1/post_person",
+            post(post_person::post_person_handler),
+        )
         .merge(RapiDoc::with_openapi("/api-docs/openapi2.json", ApiDoc::openapi()).path("/rapidoc"))
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .merge(Redoc::with_url("/redoc", ApiDoc::openapi()))
