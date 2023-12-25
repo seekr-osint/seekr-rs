@@ -9,8 +9,8 @@ license = "GPL-3.0-only"
 authors = ["9glenda"]
 categories = ["database"]
 keywords = ["osint", "security"]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace]
+members = [".", "migration", "entity"]
 
 [dependencies]
 sqlx = { features = ["sqlite", "runtime-tokio", "tls-rustls", "json"] }
@@ -27,12 +27,7 @@ tracing-subscriber = { version = "0.3.18", features = [
 tracing = "0.1.40"
 tower-http = { version = "0.5.0", features = ["trace"] }
 anyhow = "1.0.76"
-rust-embed = { version = "8.1.0", features = [
-  "axum",
-  "axum-ex",
-  # "compression",
-  "mime-guess",
-] }
+rust-embed = { version = "8.1.0", features = ["axum", "axum-ex", "mime-guess"] }
 
 mime_guess = "2.0.4"
 lingua = "1.6.2"
@@ -42,6 +37,14 @@ utoipa = { version = "4.1.0", features = ["axum_extras"] }
 utoipa-rapidoc = { version = "2.0.0", features = ["axum"] }
 utoipa-redoc = { version = "2.0.0", features = ["axum"] }
 utoipa-swagger-ui = { version = "5.0.0", features = ["axum"] }
+entity = { path = "entity" }
+migration = { path = "migration" }
+sea-orm = { version = "0.12.10", features = [
+  "sqlx-sqlite",
+  "runtime-tokio-rustls",
+  "macros",
+] }
+tower = { version = "0.4.13", features = ["tracing", "tokio", "full"] }
 
 [profile.dev]
 opt-level = 0

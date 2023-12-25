@@ -98,29 +98,33 @@
 
         nci = {
           projects = {
-            seekr = {
+            seekr-rs = {
               path = ./.;
               export = true;
               drvConfig = {
                 env = {
-                  DATABASE_URL = "sqlite:db/dev.db";
+                  DATABASE_URL = "sqlite:seekr.db";
                 };
               };
             };
           };
-          # crates = {
-          #   seekr = {
-          #     export = true;
-          #     drvConfig = {
-          #       env = {
-          #       };
-          #     };
-          #   };
-          # };
+          crates = {
+            seekr-rs = {
+              # export = true;
+              # drvConfig = {
+              #   env = {
+              #   };
+              # };
+            };
+            migration = {
+            };
+            entity = {
+            };
+          };
           toolchainConfig = ./rust-toolchain.toml;
         };
         packages = {
-          default = self'.packages.seekr-release;
+          default = self'.packages.seekr-rs-release;
           toolchain = config.nci.toolchains.shell;
         };
         devShells.default = pkgs.mkShell {

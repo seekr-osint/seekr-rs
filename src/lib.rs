@@ -8,7 +8,10 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 #[instrument]
 pub async fn run() -> Result<()> {
     setup_tracing();
-    let app = routes::get_router().layer(TraceLayer::new_for_http());
+
+    let app = routes::get_router()
+        .await?
+        .layer(TraceLayer::new_for_http());
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await?;
     info!("listening on: {}", listener.local_addr()?);
