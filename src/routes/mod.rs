@@ -30,6 +30,7 @@ pub async fn get_router(args: Args) -> anyhow::Result<Router<()>> {
             language_detection::detect_language_handler,
             list_people::list_people_handler,
             get_person::get_person_handler,
+            post_person::post_person_handler,
         ),
         components(schemas(
             language_detection::DetectLanguageQuery,
