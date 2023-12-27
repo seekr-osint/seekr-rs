@@ -118,7 +118,7 @@
             };
             migration = {
             };
-            entity = {
+            seekr-macro = {
             };
           };
           toolchainConfig = ./rust-toolchain.toml;

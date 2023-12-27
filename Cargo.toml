@@ -10,7 +10,7 @@ authors = ["9glenda"]
 categories = ["database"]
 keywords = ["osint", "security"]
 [workspace]
-members = [".", "migration"]
+members = [".", "migration", "seekr-macro"]
 
 [dependencies]
 sqlx = { features = ["sqlite", "runtime-tokio", "tls-rustls", "json"] }
@@ -49,6 +49,10 @@ thiserror = "1.0.51"
 askama = { version = "0.12.1", features = ["serde", "with-axum"] }
 clap = { version = "4.4.11", features = ["derive"] }
 tracing-test = "0.2.4"
+
+
+[dev-dependencies]
+seekr-macro = { path = "seekr-macro" }
 
 [profile.dev]
 opt-level = 0
