@@ -1,6 +1,7 @@
 pub mod cli;
 mod entity;
 mod routes;
+pub mod scrape;
 
 use anyhow::Result;
 use cli::Args;
