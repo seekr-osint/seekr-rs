@@ -10,7 +10,7 @@ publish = true
 [dependencies]
 quote = "1"
 syn = { version = "2", features = ["full"] }
-seekr = { version = "0.1.0", path = "../.", optional = true }
+seekr = { version = "0.1", path = "../.", optional = true }
 
 [features]
 dsl = ["dep:seekr"]
