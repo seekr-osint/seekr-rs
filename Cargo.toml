@@ -65,8 +65,8 @@ proptest = "1.4.0"
 rand = "0.8.5"
 
 
-# [dev-dependencies]
-# seekr-macro = { version = "0.1", path = "seekr-macro", features = ["dsl"] }
+[dev-dependencies]
+seekr-macro = { version = "0.1", path = "seekr-macro", features = ["dsl"] }
 
 [profile.dev]
 opt-level = 0
