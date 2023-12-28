@@ -11,7 +11,7 @@ keywords = ["osint", "security"]
 categories = ["database"]
 
 [workspace.package]
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 license = "GPL-3.0-only"
 authors = ["9glenda"]
@@ -28,8 +28,8 @@ sqlx = { version = "0.7", features = [
   "json",
 ] }
 async-graphql = "6.0.11"
-serde = { version = "1.0.193", features = ["derive"] }
-tokio = { version = "1.35.1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
 axum = { version = "0.7.2", features = ["form", "json"] }
 tracing-subscriber = { version = "0.3.18", features = [
   "env-filter",
@@ -37,27 +37,27 @@ tracing-subscriber = { version = "0.3.18", features = [
   "chrono",
   "local-time",
 ] }
-tracing = "0.1.40"
+tracing = "0.1"
 tower-http = { version = "0.5.0", features = ["trace"] }
 anyhow = "1"
-rust-embed = { version = "8.1.0", features = ["axum", "axum-ex", "mime-guess"] }
+rust-embed = { version = "8", features = ["axum", "axum-ex", "mime-guess"] }
 
-mime_guess = "2.0.4"
+mime_guess = "2"
 lingua = "1"
-serde_json = "1.0.108"
+serde_json = "1"
 nom = { version = "7.1.3", features = ["alloc"] }
 utoipa = { version = "4.1.0", features = ["axum_extras"] }
 utoipa-rapidoc = { version = "2.0.0", features = ["axum"] }
 utoipa-redoc = { version = "2.0.0", features = ["axum"] }
 utoipa-swagger-ui = { version = "5.0.0", features = ["axum"] }
-seekr-migration = { version = "0.1.0", path = "seekr-migration" }
+seekr-migration = { version = "0.1", path = "seekr-migration" }
 sea-orm = { version = "0.12.10", features = [
   "sqlx-sqlite",
   "runtime-tokio-rustls",
   "macros",
 ] }
 tower = { version = "0.4.13", features = ["tracing", "tokio", "full"] }
-thiserror = "1.0.51"
+thiserror = "1"
 askama = { version = "0.12.1", features = ["serde", "with-axum"] }
 clap = { version = "4.4.11", features = ["derive"] }
 tracing-test = "0.2.4"

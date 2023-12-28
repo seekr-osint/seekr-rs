@@ -3878,7 +3878,7 @@ checksum = "1c107b6f4780854c8b126e228ea8869f4d7b71260f962fefb57b996b8959ba6b"
 
 [[package]]
 name = "seekr"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "askama",
@@ -3912,7 +3912,7 @@ dependencies = [
 
 [[package]]
 name = "seekr-macro"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "quote",
  "seekr",
@@ -3921,7 +3921,7 @@ dependencies = [
 
 [[package]]
 name = "seekr-migration"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "async-std",
  "sea-orm-migration",

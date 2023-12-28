@@ -2,7 +2,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, Expr};
 
-#[feature(dsl)]
+#[cfg(feature = "dsl")]
 #[proc_macro]
 pub fn value(input: TokenStream) -> TokenStream {
     let expr = parse_macro_input!(input as Expr);
