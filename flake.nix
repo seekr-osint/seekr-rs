@@ -119,7 +119,7 @@
           toolchainConfig = ./rust-toolchain.toml;
         };
         packages = {
-          default = self'.packages.seekr-rs-release;
+          default = self'.packages.seekr-release;
           toolchain = config.nci.toolchains.shell;
         };
         devShells.default = pkgs.mkShell {
