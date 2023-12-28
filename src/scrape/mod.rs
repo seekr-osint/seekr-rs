@@ -244,6 +244,16 @@ pub fn parse_expr(envo: HashMap<String, Expr>, i: &str) -> IResult<&str, Expr> {
 
             Ok((i, Expr::Let(name.to_string(), Box::new(e1), Box::new(e2))))
         },
+        |i| {
+            let (i, _) = delimited(multispace0, tag("if"), multispace1)(i)?;
+            let (i, cond) = parse_expr(envo.clone(), i)?;
+            let (i, _) = delimited(multispace1, tag("then"), multispace1)(i)?;
+            let (i, e1) = parse_expr(envo.clone(), i)?;
+            let (i, _) = delimited(multispace1, tag("else"), multispace1)(i)?;
+            let (i, e2) = parse_expr(envo.clone(), i)?;
+
+            Ok((i, Expr::If(Box::new(cond), Box::new(e1), Box::new(e2))))
+        },
     ))
     .parse(i)
 }

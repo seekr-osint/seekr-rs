@@ -201,6 +201,23 @@ fn test_parse_expr() {
             )
         ))
     );
+
+    assert_eq!(
+        parse_expr(HashMap::new(), "if true then 1 else 2"),
+        Ok(("", Expr::If(value!(true), value!(1), value!(2),)))
+    );
+
+    assert_eq!(
+        parse_expr(HashMap::new(), "let foo = if true then 1 else 2 in foo"),
+        Ok((
+            "",
+            Expr::Let(
+                "foo".to_string(),
+                Box::new(Expr::If(value!(true), value!(1), value!(2))),
+                Box::new(Expr::If(value!(true), value!(1), value!(2))),
+            )
+        ))
+    );
     assert_eq!(
         parse_expr(HashMap::new(), "1+2*3"),
         Ok((
@@ -213,23 +230,20 @@ fn test_parse_expr() {
         ))
     );
 
-    assert_eq!(
-        parse_expr(HashMap::new(), r#""Hello World""#),
-        Ok(("", Expr::Value(Value::Str("Hello World".to_string()))))
-    );
-
     let t = vec![
         "hello",
         "world",
         "        let generated_string: String = string_strategy.generate(&mut rng);",
         r#"! #$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[ ]^_`abcdefghijklmnopqrstuvwxyz{|}~"#,
     ];
+
     for t1 in t {
         assert_eq!(
             parse_expr(HashMap::new(), &format!(r#""{}""#, t1)),
             Ok(("", Expr::Value(Value::Str(t1.to_string()))))
         );
     }
+
     assert_eq!(
         parse_expr(HashMap::new(), r#""Hello World""#),
         Ok(("", Expr::Value(Value::Str("Hello World".to_string()))))
@@ -270,5 +284,14 @@ fn test_typecheck() {
     assert_eq!(res.typecheck(), Ok(()));
 
     let (_, res) = parse_expr(HashMap::new(), r#""hello world"+1"#).unwrap();
+    assert_eq!(res.typecheck(), Err(()));
+
+    let (_, res) = parse_expr(HashMap::new(), r#"if "hello world" then 1 else 2"#).unwrap();
+    assert_eq!(res.typecheck(), Err(()));
+
+    let (_, res) = parse_expr(HashMap::new(), r#"if false then 1 else 2"#).unwrap();
+    assert_eq!(res.typecheck(), Ok(()));
+
+    let (_, res) = parse_expr(HashMap::new(), r#"if false then false else 2"#).unwrap();
     assert_eq!(res.typecheck(), Err(()));
 }

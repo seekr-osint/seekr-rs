@@ -15,7 +15,7 @@ pub fn value(input: TokenStream) -> TokenStream {
             }
             syn::Lit::Bool(_) => {
                 quote! {
-                    Expr::Value(Value::Bool(#expr))
+                    Box::new(Expr::Value(Value::Bool(#expr)))
                 }
             }
             _ => {
