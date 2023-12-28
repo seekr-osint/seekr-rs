@@ -1,21 +1,21 @@
 use nom::{
     branch::alt,
-    bytes::complete::tag,
-    character::complete::digit1,
+    bytes::complete::{escaped_transform, tag},
     character::complete::{alpha1, char, multispace0, multispace1},
-    combinator::{fail, map, map_res, opt},
-    sequence::{delimited, pair},
+    character::complete::{digit1, one_of},
+    combinator::{cut, fail, map, map_res, opt, value},
+    error::{context, ContextError, ParseError},
+    sequence::{delimited, pair, preceded, terminated},
     IResult, Parser,
 };
 use std::{collections::HashMap, str::FromStr};
 use tracing::instrument;
 
-// pub struct EnvMap(HashMap<String, Expr>);
-
 #[derive(Debug, PartialEq, Clone)]
 pub enum Value {
     Number(i64),
     Bool(bool),
+    Str(String),
 }
 
 impl Typed for Value {
@@ -26,6 +26,7 @@ impl Typed for Value {
         match s {
             Self::Number(_) => Ok(TypeRepr::Number),
             Self::Bool(_) => Ok(TypeRepr::Bool),
+            Self::Str(_) => Ok(TypeRepr::Str),
         }
     }
 }
@@ -34,6 +35,7 @@ impl Typed for Value {
 pub enum TypeRepr {
     Number,
     Bool,
+    Str,
 }
 
 trait Typed {
@@ -49,9 +51,7 @@ pub enum Expr {
     Binop(Oper, Box<Expr>, Box<Expr>),
     //  let name = e1 in e2
     Let(String, Box<Expr>, Box<Expr>),
-
-    // Will be substituded. Only usable in let expr
-    Ident(String),
+    If(Box<Expr>, Box<Expr>, Box<Expr>),
 }
 
 impl Typed for Expr {
@@ -63,7 +63,53 @@ impl Typed for Expr {
             Self::Value(v) => Ok(Value::get_type(v)?),
             Self::Binop(o, _, _) => Ok(Oper::get_type(o)?), // TODO typecheck args
             Self::Let(_, _, e2) => Ok(Expr::get_type(*e2)?),
-            Self::Ident(_) => unreachable!(),
+            Self::If(_, _, e2) => Ok(Expr::get_type(*e2)?),
+        }
+    }
+}
+// pub enum TypeCheckResult {
+//     Failed(String),
+//     Succeeded
+// }
+impl Oper {
+    pub fn get_types_to_check(&self) -> (TypeRepr, TypeRepr) {
+        match self {
+            Oper::Add | Oper::Sub | Oper::Mul | Oper::Div => (TypeRepr::Number, TypeRepr::Number),
+            Oper::Eq | Oper::Neq => (TypeRepr::Bool, TypeRepr::Bool),
+        }
+    }
+}
+pub trait TypeCheck {
+    type R;
+
+    fn typecheck(&self) -> Self::R;
+}
+
+impl TypeCheck for Expr {
+    type R = Result<(), ()>;
+
+    fn typecheck(&self) -> Self::R {
+        match self {
+            Self::Value(_) => Ok(()),
+            Self::If(condition, e1, e2) => {
+                if Expr::get_type(*condition.clone())? == TypeRepr::Bool
+                    && Expr::get_type(*e1.clone())? == Expr::get_type(*e2.clone())?
+                {
+                    Ok(())
+                } else {
+                    Err(())
+                }
+            }
+            Self::Binop(op, e1, e2) => {
+                if op.get_types_to_check()
+                    == (Expr::get_type(*e1.clone())?, Expr::get_type(*e2.clone())?)
+                {
+                    Ok(())
+                } else {
+                    Err(())
+                }
+            }
+            Self::Let(_, _, _) => Ok(()),
         }
     }
 }
@@ -101,7 +147,6 @@ pub fn parse_parens(envo: HashMap<String, Expr>, i: &str) -> IResult<&str, Expr>
 ///      4 * 20 * 6 --> (4 * 20) * 6
 ///      4 * (20 + 6) --> 4  * (20 + 6)
 ///  therefore parse_parens parses an expression inside parens.
-
 #[instrument]
 pub fn parse_factor(envo: HashMap<String, Expr>, i: &str) -> IResult<&str, Expr> {
     alt((
@@ -244,8 +289,34 @@ impl FromStr for Oper {
         }
     }
 }
+
+// original: !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
+// modified: ! #$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[ ]^_`abcdefghijklmnopqrstuvwxyz{|}~
+fn parse_str<'a, E: ParseError<&'a str>>(i: &'a str) -> IResult<&'a str, String, E> {
+    Ok(escaped_transform(
+        one_of(
+            r#" ! #$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[ ]^_`abcdefghijklmnopqrstuvwxyz{|}~"#,
+        ),
+        '\\',
+        alt((
+            value("\\", tag("\\")),
+            value("\"", tag("\"")),
+            value("\n", tag("n")),
+        )),
+    )(i)?)
+}
+
+fn string<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
+    i: &'a str,
+) -> IResult<&'a str, String, E> {
+    context(
+        "string",
+        preceded(char('\"'), cut(terminated(parse_str, char('\"')))),
+    )(i)
+}
+
 pub fn parse_value(i: &str) -> IResult<&str, Value> {
-    // No need for env
+    // No need for env since values are always literals
     alt((
         map(
             pair(opt(char('-')), map_res(digit1, |s: &str| s.parse::<i64>())),
@@ -255,225 +326,9 @@ pub fn parse_value(i: &str) -> IResult<&str, Value> {
             map_res(alt((tag("true"), tag("false"))), FromStr::from_str),
             Value::Bool,
         ),
+        map(string, Value::Str),
     ))
     .parse(i)
 }
 
-#[cfg(test)]
-mod tests {
-
-    use super::*;
-    use std::collections::hash_map::HashMap;
-    #[test]
-    fn test_parse_value() {
-        assert_eq!(parse_value("true"), Ok(("", Value::Bool(true))));
-        assert_eq!(parse_value("false"), Ok(("", Value::Bool(false))));
-        for i in -1000..1000 {
-            assert_eq!(
-                parse_value(format!("{}", i).as_str()),
-                Ok(("", Value::Number(i)))
-            );
-        }
-    }
-    use seekr_macro::value;
-    use tracing_test::traced_test;
-    #[traced_test]
-    #[test]
-    fn test_parse_expr() {
-        // expr!(Add,
-        //     value!(1)
-        //     value!(2)
-        // )
-
-        // value!(int_one!());
-        assert_eq!(
-            parse_expr(HashMap::new(), "1*3+-2"),
-            Ok((
-                "",
-                Expr::Binop(
-                    Oper::Add,
-                    Box::new(Expr::Binop(Oper::Mul, value!(1), value!(3))),
-                    value!(-2)
-                )
-            ))
-        );
-
-        assert_eq!(
-            parse_expr(HashMap::new(), "1*3+2"),
-            Ok((
-                "",
-                Expr::Binop(
-                    Oper::Add,
-                    Box::new(Expr::Binop(Oper::Mul, value!(1), value!(3))),
-                    value!(2)
-                )
-            ))
-        );
-
-        assert_eq!(
-            parse_expr(HashMap::new(), "1*3+(2)"),
-            Ok((
-                "",
-                Expr::Binop(
-                    Oper::Add,
-                    Box::new(Expr::Binop(Oper::Mul, value!(1), value!(3))),
-                    value!(2)
-                )
-            ))
-        );
-        assert_eq!(
-            parse_expr(HashMap::new(), "true"),
-            Ok(("", Expr::Value(Value::Bool(true))))
-        );
-        assert_eq!(
-            parse_expr(HashMap::new(), "false"),
-            Ok(("", Expr::Value(Value::Bool(false))))
-        );
-        for i in -1000..1000 {
-            assert_eq!(
-                parse_expr(HashMap::new(), format!("{}", i).as_str()),
-                Ok(("", Expr::Value(Value::Number(i))))
-            );
-        }
-
-        assert_eq!(
-            parse_expr(HashMap::new(), "1+2+5"),
-            Ok((
-                "",
-                Expr::Binop(
-                    Oper::Add,
-                    Box::new(Expr::Binop(Oper::Add, value!(1), value!(2))),
-                    value!(5)
-                )
-            ))
-        );
-
-        assert_eq!(
-            parse_expr(HashMap::new(), "1*2*5"),
-            Ok((
-                "",
-                Expr::Binop(
-                    Oper::Mul,
-                    Box::new(Expr::Binop(Oper::Mul, value!(1), value!(2))),
-                    value!(5)
-                )
-            ))
-        );
-
-        assert_eq!(
-            parse_expr(HashMap::new(), "1*2*5-2"),
-            Ok((
-                "",
-                Expr::Binop(
-                    Oper::Sub,
-                    Box::new(Expr::Binop(
-                        Oper::Mul,
-                        Box::new(Expr::Binop(Oper::Mul, value!(1), value!(2))),
-                        value!(5)
-                    )),
-                    value!(2)
-                )
-            ))
-        );
-
-        assert_eq!(
-            parse_expr(HashMap::new(), "1*2*5-2+1"),
-            Ok((
-                "",
-                Expr::Binop(
-                    Oper::Add,
-                    Box::new(Expr::Binop(
-                        Oper::Sub,
-                        Box::new(Expr::Binop(
-                            Oper::Mul,
-                            Box::new(Expr::Binop(Oper::Mul, value!(1), value!(2))),
-                            value!(5)
-                        )),
-                        value!(2)
-                    )),
-                    value!(1)
-                )
-            ))
-        );
-
-        assert_eq!(
-            parse_expr(HashMap::new(), "(1+2)*3"),
-            Ok((
-                "",
-                Expr::Binop(
-                    Oper::Mul,
-                    Box::new(Expr::Binop(Oper::Add, value!(1), value!(2))),
-                    value!(3)
-                )
-            ))
-        );
-
-        assert_eq!(
-            parse_expr(HashMap::new(), "(1+2+3)*3"),
-            Ok((
-                "",
-                Expr::Binop(
-                    Oper::Mul,
-                    Box::new(Expr::Binop(
-                        Oper::Add,
-                        Box::new(Expr::Binop(Oper::Add, value!(1), value!(2))),
-                        value!(3),
-                    )),
-                    value!(3)
-                )
-            ))
-        );
-
-        assert_eq!(
-            parse_expr(HashMap::new(), "let foo=2 in 3"),
-            Ok(("", Expr::Let("foo".to_string(), value!(2), value!(3))))
-        );
-
-        assert_eq!(
-            parse_expr(HashMap::new(), "let foo=2 in foo"),
-            Ok(("", Expr::Let("foo".to_string(), value!(2), value!(2))))
-        );
-        assert_eq!(
-            parse_expr(HashMap::new(), "let foo=2 in foo+3"),
-            Ok((
-                "",
-                Expr::Let(
-                    "foo".to_string(),
-                    value!(2),
-                    Box::new(Expr::Binop(Oper::Add, value!(2), value!(3)))
-                )
-            ))
-        );
-
-        assert_eq!(
-            parse_expr(HashMap::new(), "let foo=2 in let foo = foo+3 in foo-1"),
-            Ok((
-                "",
-                Expr::Let(
-                    "foo".to_string(),
-                    value!(2),
-                    Box::new(Expr::Let(
-                        "foo".to_string(),
-                        Box::new(Expr::Binop(Oper::Add, value!(2), value!(3))),
-                        Box::new(Expr::Binop(
-                            Oper::Sub,
-                            Box::new(Expr::Binop(Oper::Add, value!(2), value!(3))),
-                            value!(1)
-                        ))
-                    ))
-                )
-            ))
-        );
-        assert_eq!(
-            parse_expr(HashMap::new(), "1+2*3"),
-            Ok((
-                "",
-                Expr::Binop(
-                    Oper::Add,
-                    value!(1),
-                    Box::new(Expr::Binop(Oper::Mul, value!(2), value!(3)))
-                )
-            ))
-        );
-    }
-}
+mod test;
