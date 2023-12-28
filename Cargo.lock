@@ -3892,7 +3892,6 @@ dependencies = [
  "rand",
  "rust-embed",
  "sea-orm",
- "seekr-macro",
  "seekr-migration",
  "serde",
  "serde_json",
