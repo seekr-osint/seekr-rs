@@ -1,7 +1,7 @@
 use clap::Parser;
 use std::fs::File;
 
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, Clone)]
 #[command(author, version, about)]
 pub struct Args {
     #[clap(short, long, default_value = "./seekr.db")]

@@ -1,14 +1,18 @@
 [package]
 name = "seekr-macro"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "proc macros used in seekr"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [dependencies]
-quote = "1.0.33"
-syn = { version = "2.0.43", features = ["full"] }
-seekr-rs = { path = "../." }
+quote = "1"
+syn = { version = "2", features = ["full"] }
+seekr = { path = "../.", optional = true }
+
+[features]
+dsl = ["dep:seekr"]
 
 [lib]
 proc-macro = true

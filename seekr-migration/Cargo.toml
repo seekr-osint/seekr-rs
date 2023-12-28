@@ -1,11 +1,13 @@
 [package]
-name = "migration"
-version = "0.1.0"
-edition = "2021"
-publish = false
+name = "seekr-migration"
+description = "sea orm migration code for the seekr database"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [lib]
-name = "migration"
+name = "seekr_migration"
 path = "src/lib.rs"
 
 [dependencies]

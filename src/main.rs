@@ -1,5 +1,5 @@
 use anyhow::Result;
-use seekr_rs::{cli, run};
+use seekr::{cli, run};
 
 #[tokio::main]
 async fn main() -> Result<()> {

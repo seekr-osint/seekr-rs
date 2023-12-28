@@ -98,7 +98,7 @@
 
         nci = {
           projects = {
-            seekr-rs = {
+            seekr = {
               path = ./.;
               export = true;
               drvConfig = {
@@ -109,14 +109,9 @@
             };
           };
           crates = {
-            seekr-rs = {
-              # export = true;
-              # drvConfig = {
-              #   env = {
-              #   };
-              # };
+            seekr = {
             };
-            migration = {
+            seekr-migration = {
             };
             seekr-macro = {
             };

@@ -19,11 +19,11 @@ use utoipa_rapidoc::RapiDoc;
 use utoipa_redoc::{Redoc, Servable};
 use utoipa_swagger_ui::SwaggerUi;
 
-use migration::{Migrator, MigratorTrait};
 use people::Model;
 use sea_orm::{ActiveModelTrait, Database, DatabaseConnection, Set};
+use seekr_migration::{Migrator, MigratorTrait};
 
-pub async fn get_router(args: Args) -> anyhow::Result<Router<()>> {
+pub async fn get_router(args: &Args) -> anyhow::Result<Router<()>> {
     #[derive(OpenApi)]
     #[openapi(
         paths(
