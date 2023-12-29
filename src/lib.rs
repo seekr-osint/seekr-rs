@@ -1,7 +1,9 @@
 pub mod cli;
-mod entity;
-mod routes;
+pub mod people;
+pub mod routes;
 pub mod scrape;
+pub mod users;
+pub mod web;
 
 use anyhow::Result;
 use cli::Args;
@@ -25,8 +27,9 @@ pub async fn run(args: Args) -> Result<()> {
 fn setup_tracing() {
     tracing_subscriber::registry()
         .with(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "seekr=info,tower_http=debug,axum::rejection=trace".into()),
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                "seekr=info,axum_login=debug,tower_http=debug,axum::rejection=trace".into()
+            }),
         )
         .with(
             tracing_subscriber::fmt::layer()
