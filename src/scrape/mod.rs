@@ -120,7 +120,7 @@ impl TypeCheck for Expr {
 /// # Example
 ///
 /// ```rust
-/// use seekr_rs::scrape::{Expr, parse_parens, Value, Oper};
+/// use seekr::scrape::{Expr, parse_parens, Value, Oper};
 /// use std::collections::HashMap;
 /// let result = parse_parens(HashMap::new(), "(4+20)");
 /// assert_eq!(
