@@ -31,7 +31,7 @@ sqlx = { version = "0.7", features = [
 async-graphql = "6.0.11"
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
-axum = { version = "0.7.2", features = ["form", "json"] }
+axum = { version = "0.7.3", features = ["form", "json"] }
 tracing-subscriber = { version = "0.3.18", features = [
   "env-filter",
   "time",
