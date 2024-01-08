@@ -202,7 +202,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a41603f7cdbf5ac4af60760f17253eb6adf6ec5b6f14a7ed830cf687d375f163"
 dependencies = [
  "askama",
- "axum-core 0.4.1",
+ "axum-core 0.4.2",
  "http 1.0.0",
 ]
 
@@ -633,12 +633,12 @@ dependencies = [
 
 [[package]]
 name = "axum"
-version = "0.7.2"
+version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "202651474fe73c62d9e0a56c6133f7a0ff1dc1c8cf7a5b03381af2a26553ac9d"
+checksum = "d09dbe0e490df5da9d69b36dca48a76635288a82f92eca90024883a56202026d"
 dependencies = [
  "async-trait",
- "axum-core 0.4.1",
+ "axum-core 0.4.2",
  "bytes",
  "futures-util",
  "http 1.0.0",
@@ -662,6 +662,7 @@ dependencies = [
  "tower",
  "tower-layer",
  "tower-service",
+ "tracing",
 ]
 
 [[package]]
@@ -683,9 +684,9 @@ dependencies = [
 
 [[package]]
 name = "axum-core"
-version = "0.4.1"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77cb22c689c44d4c07b0ab44ebc25d69d8ae601a2f28fb8d672d344178fa17aa"
+checksum = "e87c8503f93e6d144ee5690907ba22db7ba79ab001a932ab99034f0fe836b3df"
 dependencies = [
  "async-trait",
  "bytes",
@@ -699,6 +700,7 @@ dependencies = [
  "sync_wrapper",
  "tower-layer",
  "tower-service",
+ "tracing",
 ]
 
 [[package]]
@@ -708,7 +710,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5fff85d5ba21f2063b3e8e47ba7192f7d2b73760e3d413db8e7c9b9bea3095b2"
 dependencies = [
  "async-trait",
- "axum 0.7.2",
+ "axum 0.7.3",
  "form_urlencoded",
  "ring",
  "serde",
@@ -4242,7 +4244,7 @@ dependencies = [
  "askama_axum",
  "async-graphql 6.0.11",
  "async-trait",
- "axum 0.7.2",
+ "axum 0.7.3",
  "axum-login",
  "clap",
  "eyre",
@@ -5030,7 +5032,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4fd0118512cf0b3768f7fcccf0bef1ae41d68f2b45edc1e77432b36c97c56c6d"
 dependencies = [
  "async-trait",
- "axum-core 0.4.1",
+ "axum-core 0.4.2",
  "cookie",
  "futures-util",
  "http 1.0.0",
@@ -5087,7 +5089,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "116390a480725905cc9c9b4059afef991ae331a759df51c9c3de4579e2004b2a"
 dependencies = [
  "async-trait",
- "axum-core 0.4.1",
+ "axum-core 0.4.2",
  "futures",
  "http 1.0.0",
  "parking_lot",
@@ -5328,7 +5330,7 @@ version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d331839f6de584865f20c8138b73868d515ba62349ae4c8c1f78ffa54069e78"
 dependencies = [
- "axum 0.7.2",
+ "axum 0.7.3",
  "serde",
  "serde_json",
  "utoipa",
@@ -5340,7 +5342,7 @@ version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "01520ff2511e54c069eda8e93569fff9893b2548c53c1357655292f47ef6782f"
 dependencies = [
- "axum 0.7.2",
+ "axum 0.7.3",
  "serde",
  "serde_json",
  "utoipa",
@@ -5352,7 +5354,7 @@ version = "5.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f839caa8e09dddc3ff1c3112a91ef7da0601075ba5025d9f33ae99c4cb9b6e51"
 dependencies = [
- "axum 0.7.2",
+ "axum 0.7.3",
  "mime_guess",
  "regex",
  "rust-embed",
