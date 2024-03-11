@@ -60,7 +60,7 @@ sea-orm = { version = "0.12.10", features = [
 tower = { version = "0.4.13", features = ["tracing", "tokio", "full"] }
 thiserror = "1"
 askama = { version = "0.12.1", features = ["serde", "with-axum"] }
-clap = { version = "4.4.11", features = ["derive"] }
+clap = { version = "4.5.2", features = ["derive"] }
 tracing-test = "0.2.4"
 proptest = "1.4.0"
 rand = "0.8.5"
