@@ -69,7 +69,7 @@ axum-login = "0.12.0"
 askama_axum = "0.4.0"
 time = "0.3.31"
 password-auth = "1.0.0"
-async-trait = "0.1.75"
+async-trait = "0.1.78"
 sqlxinsert = "0.8.0"
 eyre = "0.6.11"
 
